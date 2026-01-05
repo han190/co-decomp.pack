@@ -2,8 +2,13 @@ name = "co-decomp"
 version = "0.0.1"
 license = "MIT"
 maintainer = "limpid.mazarine@gmail.com"
-keywords = ["coarray", "Fortran"]
 author = "Han Tang"
+copyright = "Copyright 2019-2026 Han Tang"
+description = "Coarray Decomposition Library"
+keywords = ["coarray", "Fortran"]
+
+[install]
+library = true
 
 [library]
 source-dir = "src"
@@ -11,4 +16,4 @@ source-dir = "src"
 [[test]]
 name = "test"
 source-dir = "test"
-main = "test.f90"
+main = "co_decomp_test.f90"

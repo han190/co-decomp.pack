@@ -1,9 +1,9 @@
 program main
 
-  use, non_intrinsic :: module_decomposition
+  use, non_intrinsic :: co_decomp
   implicit none
 
-  type(decomposition(rank=:)), allocatable :: decomp
+  type(decomposition_type(rank=:)), allocatable :: decomp
   integer, dimension(2) :: num_tasks, num_procs
   integer :: i
 
@@ -28,7 +28,10 @@ program main
   sync all
   critical
     print "(dt)", decomp
-    print "(a, '=', i0)", "this_image", this_image(decomp)
+    print "(a, '=', i0, ',', i0, '->', i0)", &
+      & "this_image", this_image(decomp), &
+      & base_index(decomp) + 1, &
+      & base_index(decomp) + size(decomp)
   end critical
 
 end program main

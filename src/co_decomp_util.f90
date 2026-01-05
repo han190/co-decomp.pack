@@ -1,5 +1,5 @@
-submodule(module_utility) submodule_convert
-implicit none
+submodule(co_decomp) co_decomp_util
+implicit none (type, external)
 contains
 
 !> Convert index from array form to integer form.
@@ -34,7 +34,15 @@ pure module function convert_int2arr(shapes, index_int) result(index_arr)
     return
   end if
 
-  call reallocate(index_arr, size(shapes))
+  associate (n => size(shapes))
+    if (.not. allocated(index_arr)) then
+      allocate (index_arr(n))
+    else if (size(index_arr) < n) then
+      deallocate (index_arr)
+      allocate (index_arr(n))
+    end if
+  end associate
+
   tmp = index_int
   do i = size(shapes), 2, -1
     associate (p => product(shapes(1:i - 1)))
@@ -46,4 +54,30 @@ pure module function convert_int2arr(shapes, index_int) result(index_arr)
   index_arr(1) = rem
 end function convert_int2arr
 
-end submodule submodule_convert
+!> Fill optional argument (int32) with default value if not present.
+pure module function optional_arg_int32(opt_arg, default_val) result(ret)
+  integer, intent(in), optional :: opt_arg
+  integer, intent(in) :: default_val
+  integer :: ret
+
+  if (present(opt_arg)) then
+    ret = opt_arg
+  else
+    ret = default_val
+  end if
+end function optional_arg_int32
+
+!> Fill optional argument (char) with default value if not present.
+pure module function optional_arg_char(opt_arg, default_val) result(ret)
+  character(len=*), intent(in), optional :: opt_arg
+  character(len=*), intent(in) :: default_val
+  character(len=:), allocatable :: ret
+
+  if (present(opt_arg)) then
+    ret = opt_arg
+  else
+    ret = default_val
+  end if
+end function optional_arg_char
+
+end submodule co_decomp_util

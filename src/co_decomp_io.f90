@@ -1,30 +1,10 @@
-submodule(module_decomposition) submodule_io
-implicit none
+submodule(co_decomp) co_decomp_io
+implicit none (type, external)
 contains
-
-!> Convert integer to string.
-pure function int2str(n) result(str)
-  integer, intent(in) :: n
-  character(len=:), allocatable :: str
-  integer :: m
-
-  m = floor(log10(real(abs(n)))) + 1
-  if (n < 0) m = m + 1
-
-  if (allocated(str)) then
-    if (len(str) /= m) then
-      deallocate (str)
-      allocate (character(len=m) :: str)
-    end if
-  else
-    allocate (character(len=m) :: str)
-  end if
-  write (str, "(i0)") n
-end function int2str
 
 !> write(formatted)
 module subroutine write_formatted(dtv, unit, iotype, v_list, iostat, iomsg)
-  class(decomposition(rank=*)), intent(in) :: dtv
+  class(decomposition_type(rank=*)), intent(in) :: dtv
   integer, intent(in) :: unit
   character(len=*), intent(in) :: iotype
   integer, intent(in) :: v_list (:)
@@ -76,4 +56,24 @@ module subroutine write_formatted(dtv, unit, iotype, v_list, iostat, iomsg)
   write (unit, "(tl1, a)", iostat=iostat) ")"
 end subroutine write_formatted
 
-end submodule submodule_io
+!> Convert integer to string.
+pure function int2str(n) result(str)
+  integer, intent(in) :: n
+  character(len=:), allocatable :: str
+  integer :: m
+
+  m = floor(log10(real(abs(n)))) + 1
+  if (n < 0) m = m + 1
+
+  if (allocated(str)) then
+    if (len(str) /= m) then
+      deallocate (str)
+      allocate (character(len=m) :: str)
+    end if
+  else
+    allocate (character(len=m) :: str)
+  end if
+  write (str, "(i0)") n
+end function int2str
+
+end submodule co_decomp_io
