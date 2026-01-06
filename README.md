@@ -17,15 +17,15 @@ cmake .. -G "Ninja"
 ## Example
 ```fortran
 program main
-  use, non_intrinsic :: module_decomposition
+  use, non_intrinsic :: co_decomp
   implicit none
 
-  type(decomposition_type) :: decomp
+  type(decomposition_type(rank=:)), allocatable :: decomp
   integer, dimension(2) :: num_tasks, num_procs
 
   num_tasks = [48, 32]
   num_procs = [2, num_images()/2]
-  call decompose(decomp, num_tasks, num_procs)
+  decomp = decompose(num_tasks, num_procs)
   if (this_image() == 1) print *, decomp
 end program main
 ```
