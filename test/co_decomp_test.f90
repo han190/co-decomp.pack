@@ -3,7 +3,7 @@ program main
   use, non_intrinsic :: co_decomp
   implicit none
 
-  type(decomposition_type(rank=:)), allocatable :: decomp
+  type(decomposition_type) :: decomp
   integer, dimension(2) :: num_tasks, num_procs
   integer :: i
 

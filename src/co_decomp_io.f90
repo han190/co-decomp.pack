@@ -4,7 +4,7 @@ contains
 
 !> write(formatted)
 module subroutine write_formatted(dtv, unit, iotype, v_list, iostat, iomsg)
-  class(decomposition_type(rank=*)), intent(in) :: dtv
+  class(decomposition_type), intent(in) :: dtv
   integer, intent(in) :: unit
   character(len=*), intent(in) :: iotype
   integer, intent(in) :: v_list (:)

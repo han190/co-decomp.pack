@@ -34,15 +34,7 @@ pure module function convert_int2arr(shapes, index_int) result(index_arr)
     return
   end if
 
-  associate (n => size(shapes))
-    if (.not. allocated(index_arr)) then
-      allocate (index_arr(n))
-    else if (size(index_arr) < n) then
-      deallocate (index_arr)
-      allocate (index_arr(n))
-    end if
-  end associate
-
+  call reallocate(index_arr, size(shapes))
   tmp = index_int
   do i = size(shapes), 2, -1
     associate (p => product(shapes(1:i - 1)))
@@ -53,6 +45,19 @@ pure module function convert_int2arr(shapes, index_int) result(index_arr)
   end do
   index_arr(1) = rem
 end function convert_int2arr
+
+!> Re-allocate integer array.
+module pure subroutine reallocate(array, n)
+  integer, allocatable, intent(inout) :: array(:)
+  integer, intent(in) :: n
+
+  if (.not. allocated(array)) then
+    allocate (array(n))
+  else if (size(array) < n) then
+    deallocate (array)
+    allocate (array(n))
+  end if
+end subroutine reallocate
 
 !> Fill optional argument (int32) with default value if not present.
 pure module function optional_arg_int32(opt_arg, default_val) result(ret)

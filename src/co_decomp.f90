@@ -12,15 +12,15 @@ public :: base_index
 private
 
 !> Decomposition type
-type :: decomposition_type(rank)
-  integer, len :: rank
-  integer :: global_size(rank)
-  integer :: num_procs(rank)
-  integer :: local_size_max(rank)
-  integer :: local_size(rank)
-  integer :: co_index(rank)
-  integer :: remainder(rank)
-  integer :: base_index(rank)
+type :: decomposition_type
+  integer :: rank
+  integer, allocatable :: global_size(:)
+  integer, allocatable :: num_procs(:)
+  integer, allocatable :: local_size_max(:)
+  integer, allocatable :: local_size(:)
+  integer, allocatable :: co_index(:)
+  integer, allocatable :: remainder(:)
+  integer, allocatable :: base_index(:)
 end type decomposition_type
 
 !> Wrapper decompose
@@ -70,18 +70,18 @@ interface
   !> Decomposition type constructor
   module function decompose_manual_vector(num_tasks, num_procs) result(decomp)
     integer, intent(in) :: num_tasks(:), num_procs(:)
-    type(decomposition_type(rank=:)), allocatable :: decomp
+    type(decomposition_type) :: decomp
   end function decompose_manual_vector
 
   !> Wrapper of rank 1 decomposition.
   module function decompose_manual_scalar(num_tasks, num_procs) result(decomp)
     integer, intent(in) :: num_tasks, num_procs
-    type(decomposition_type(rank=:)), allocatable :: decomp
+    type(decomposition_type) :: decomp
   end function decompose_manual_scalar
 
   !> write(formatted)
   module subroutine write_formatted(dtv, unit, iotype, v_list, iostat, iomsg)
-    class(decomposition_type(rank=*)), intent(in) :: dtv
+    class(decomposition_type), intent(in) :: dtv
     integer, intent(in) :: unit
     character(len=*), intent(in) :: iotype
     integer, intent(in) :: v_list(:)
@@ -91,7 +91,7 @@ interface
 
   !> Compute local index from global index
   module function get_location(decomp, global_index, recompute) result(local_index)
-    type(decomposition_type(rank=*)), intent(inout) :: decomp
+    type(decomposition_type), intent(inout) :: decomp
     integer, intent(in) :: global_index(:)
     logical, intent(in), optional :: recompute
     integer, allocatable :: local_index(:)
@@ -99,7 +99,7 @@ interface
 
   !> The "size" function for decomposition
   pure module function get_size(decomp, dim, opt) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     integer, intent(in), optional :: dim
     character(len=*), intent(in), optional :: opt
     integer :: ret
@@ -107,32 +107,32 @@ interface
 
   !> The `shape` function for decomposition
   pure module function get_shape(decomp, opt) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     character(len=*), intent(in), optional :: opt
     integer, allocatable :: ret(:)
   end function get_shape
 
   !> Get base index
   pure module function base_index(decomp) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     integer, allocatable :: ret(:)
   end function base_index
 
   !> Get remainder
   pure module function remainder(decomp) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     integer, allocatable :: ret(:)
   end function remainder
 
   !> Get number of processors
   pure module function get_coshape(decomp) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     integer, allocatable :: ret(:)
   end function get_coshape
 
   !> Get co_index
   pure module function get_thisimage(decomp, dim) result(ret)
-    type(decomposition_type(rank=*)), intent(in) :: decomp
+    type(decomposition_type), intent(in) :: decomp
     integer, intent(in), optional :: dim
     integer :: ret
   end function get_thisimage
@@ -148,6 +148,12 @@ interface
     integer, intent(in) :: shapes(:), index_int
     integer, allocatable :: index_arr(:)
   end function convert_int2arr
+
+  !> Re-allocate integer array.
+  module pure subroutine reallocate(array, n)
+    integer, allocatable, intent(inout) :: array(:)
+    integer, intent(in) :: n
+  end subroutine reallocate
 
   !> Fill optional argument (int32) with default value if not present.
   pure module function optional_arg_int32(opt_arg, default_val) result(ret)

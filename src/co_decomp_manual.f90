@@ -5,7 +5,7 @@ contains
 !> Wrapper of rank 1 decomposition.
 module function decompose_manual_scalar(num_tasks, num_procs) result(decomp)
   integer, intent(in) :: num_tasks, num_procs
-  type(decomposition_type(rank=:)), allocatable :: decomp
+  type(decomposition_type) :: decomp
 
   decomp = decompose_manual_vector([num_tasks], [num_procs])
 end function decompose_manual_scalar
@@ -13,22 +13,24 @@ end function decompose_manual_scalar
 !> Decomposition type constructor
 module function decompose_manual_vector(num_tasks, num_procs) result(decomp)
   integer, intent(in) :: num_tasks(:), num_procs(:)
-  type(decomposition_type(rank=:)), allocatable :: decomp
+  type(decomposition_type) :: decomp
   integer, dimension(size(num_tasks)) :: m, r, alpha, m_alpha, k0_alpha
   integer :: n
 
+  decomp%rank = size(num_tasks)
   !> Runtime check
   n = size(num_tasks)
   if (n /= size(num_procs)) error stop &
     & "[decompose_manual_vector] Invalid processors or size."
   
   !> Allocate decomp
-  if (.not. allocated(decomp)) then
-    allocate (decomposition_type(rank=n) :: decomp)
-  else if (decomp%rank /= n) then
-    deallocate (decomp)
-    allocate (decomposition_type(rank=n) :: decomp)
-  end if
+  call reallocate(decomp%global_size, decomp%rank)
+  call reallocate(decomp%num_procs, decomp%rank)
+  call reallocate(decomp%local_size_max, decomp%rank)
+  call reallocate(decomp%local_size, decomp%rank)
+  call reallocate(decomp%co_index, decomp%rank)
+  call reallocate(decomp%remainder, decomp%rank)
+  call reallocate(decomp%base_index, decomp%rank)
   
   m = get_maxlocalsize(num_tasks, num_procs)
   r = get_remainder(num_tasks, num_procs)
@@ -47,7 +49,7 @@ end function decompose_manual_vector
 
 !> Compute local index from global index.
 module function get_location(decomp, global_index, recompute) result(local_index)
-  type(decomposition_type(rank=*)), intent(inout) :: decomp
+  type(decomposition_type), intent(inout) :: decomp
   integer, intent(in) :: global_index(:)
   logical, intent(in), optional :: recompute
   integer, allocatable :: local_index(:)
