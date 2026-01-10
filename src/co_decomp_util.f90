@@ -4,7 +4,11 @@ contains
 
 !> Convert index from array form to integer form.
 pure module function convert_arr2int(shapes, index_arr) result(index_int)
-  integer, intent(in) :: shapes(:), index_arr(:)
+  !> Shape array describing the multi-dimensional layout.
+  integer, intent(in) :: shapes(:)
+  !> Index array (multi-dimensional indices) to convert.
+  integer, intent(in) :: index_arr(:)
+  !> Resulting linear/integer index.
   integer :: index_int
   integer :: i
 
@@ -23,7 +27,11 @@ end function convert_arr2int
 
 !> Convert index from integer form to array form.
 pure module function convert_int2arr(shapes, index_int) result(index_arr)
-  integer, intent(in) :: shapes(:), index_int
+  !> Shape array describing the multi-dimensional layout.
+  integer, intent(in) :: shapes(:)
+  !> Integer (linear) index to convert into an array-form index.
+  integer, intent(in) :: index_int
+  !> Returned multi-dimensional index array.
   integer, allocatable :: index_arr(:)
   integer :: tmp, rem, i
 
@@ -48,7 +56,9 @@ end function convert_int2arr
 
 !> Re-allocate integer array.
 module pure subroutine reallocate(array, n)
+  !> Allocatable integer array to (re)allocate.
   integer, allocatable, intent(inout) :: array(:)
+  !> New length to allocate for `array`.
   integer, intent(in) :: n
 
   if (.not. allocated(array)) then
@@ -61,8 +71,11 @@ end subroutine reallocate
 
 !> Fill optional argument (int32) with default value if not present.
 pure module function optional_arg_int32(opt_arg, default_val) result(ret)
+  !> Optional integer argument provided by caller.
   integer, intent(in), optional :: opt_arg
+  !> Default value used when `opt_arg` is not present.
   integer, intent(in) :: default_val
+  !> Returned integer: either `opt_arg` or `default_val`.
   integer :: ret
 
   if (present(opt_arg)) then
@@ -74,8 +87,11 @@ end function optional_arg_int32
 
 !> Fill optional argument (char) with default value if not present.
 pure module function optional_arg_char(opt_arg, default_val) result(ret)
+  !> Optional character/string argument provided by caller.
   character(len=*), intent(in), optional :: opt_arg
+  !> Default string used when `opt_arg` is not present.
   character(len=*), intent(in) :: default_val
+  !> Returned string (allocated to appropriate length).
   character(len=:), allocatable :: ret
 
   if (present(opt_arg)) then

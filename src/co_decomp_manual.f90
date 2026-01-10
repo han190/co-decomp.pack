@@ -4,7 +4,11 @@ contains
 
 !> Wrapper of rank 1 decomposition.
 module function decompose_manual_scalar(num_tasks, num_procs) result(decomp)
-  integer, intent(in) :: num_tasks, num_procs
+  !> Number of tasks (scalar).
+  integer, intent(in) :: num_tasks
+  !> Number of processors (scalar).
+  integer, intent(in) :: num_procs
+  !> Resulting decomposition object.
   type(decomposition_type) :: decomp
 
   decomp = decompose_manual_vector([num_tasks], [num_procs])
@@ -12,7 +16,11 @@ end function decompose_manual_scalar
 
 !> Decomposition type constructor
 module function decompose_manual_vector(num_tasks, num_procs) result(decomp)
-  integer, intent(in) :: num_tasks(:), num_procs(:)
+  !> Number of tasks in each dimension (length = rank).
+  integer, intent(in) :: num_tasks(:)
+  !> Number of processors in each dimension (length = rank).
+  integer, intent(in) :: num_procs(:)
+  !> Resulting decomposition object.
   type(decomposition_type) :: decomp
   integer, dimension(size(num_tasks)) :: m, r, alpha, m_alpha, k0_alpha
   integer :: n
@@ -49,9 +57,13 @@ end function decompose_manual_vector
 
 !> Compute local index from global index.
 module function get_location(decomp, global_index, recompute) result(local_index)
+  !> Decomposition object (may be modified/recomputed).
   type(decomposition_type), intent(inout) :: decomp
+  !> Global multi-dimensional index to locate.
   integer, intent(in) :: global_index(:)
+  !> Optional flag to force recomputation.
   logical, intent(in), optional :: recompute
+  !> Returned local index corresponding to `global_index`.
   integer, allocatable :: local_index(:)
 
   if (size(global_index) /= decomp%rank) error stop &
@@ -79,7 +91,13 @@ end function get_location
 
 !> Compute base index
 impure elemental function get_baseindex(r, alpha, m_alpha) result(k0_alpha)
-  integer, intent(in) :: r, alpha, m_alpha
+  !> Remainder elements for the dimension.
+  integer, intent(in) :: r
+  !> Processor coordinate (co-index) for which to compute base.
+  integer, intent(in) :: alpha
+  !> Local size for processor `alpha`.
+  integer, intent(in) :: m_alpha
+  !> Starting global index for processor `alpha`.
   integer :: k0_alpha
 
   if (r == 0) then
@@ -96,7 +114,13 @@ end function get_baseindex
 
 !> Compute co-index
 impure elemental function get_coindex(r, m, k) result(alpha)
-  integer, intent(in) :: r, m, k
+  !> Remainder elements for the dimension.
+  integer, intent(in) :: r
+  !> Maximum local size per processor.
+  integer, intent(in) :: m
+  !> Global index for which to compute processor coordinate.
+  integer, intent(in) :: k
+  !> Returned processor coordinate (co-index).
   integer :: alpha
 
   if (r == 0) then
@@ -113,7 +137,13 @@ end function get_coindex
 
 !> Compute local size
 impure elemental function get_localsize(r, alpha, m) result(m_alpha)
-  integer, intent(in) :: r, alpha, m
+  !> Remainder elements for the dimension.
+  integer, intent(in) :: r
+  !> Processor coordinate for which to compute local size.
+  integer, intent(in) :: alpha
+  !> Maximum local size per processor.
+  integer, intent(in) :: m
+  !> Returned local size for processor `alpha`.
   integer :: m_alpha
 
   if (r == 0) then
@@ -130,7 +160,11 @@ end function get_localsize
 
 !> Compute maximum local size
 impure elemental function get_maxlocalsize(n, p) result(m)
-  integer, intent(in) :: n, p
+  !> Global number of tasks/elements.
+  integer, intent(in) :: n
+  !> Number of processors.
+  integer, intent(in) :: p
+  !> Returned maximum local size per processor.
   integer :: m
 
   m = (n - 1) / p + 1
@@ -138,7 +172,11 @@ end function get_maxlocalsize
 
 !> Compute remainder
 impure elemental function get_remainder(n, p) result(r)
-  integer, intent(in) :: n, p
+  !> Global number of tasks/elements.
+  integer, intent(in) :: n
+  !> Number of processors.
+  integer, intent(in) :: p
+  !> Returned remainder (n mod p).
   integer :: r
 
   r = mod(n, p)

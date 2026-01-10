@@ -1,0 +1,4 @@
+options test
+options --compiler ifx
+options --profile debug
+options --flag "-coarray=shared -coarray-num-images=2"

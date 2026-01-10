@@ -1,0 +1,4 @@
+options test
+options --compiler caf
+options --profile debug
+options --runner "cafrun -n 2"

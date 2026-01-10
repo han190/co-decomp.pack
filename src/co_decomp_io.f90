@@ -4,11 +4,17 @@ contains
 
 !> write(formatted)
 module subroutine write_formatted(dtv, unit, iotype, v_list, iostat, iomsg)
+  !> Decomposition object to be written.
   class(decomposition_type), intent(in) :: dtv
+  !> Fortran unit number to write to.
   integer, intent(in) :: unit
+  !> I/O type string (format specifier).
   character(len=*), intent(in) :: iotype
-  integer, intent(in) :: v_list (:)
+  !> Value list to be written.
+  integer, intent(in) :: v_list(:)
+  !> Returned I/O status.
   integer, intent(out) :: iostat
+  !> I/O message buffer (in/out).
   character(len=*), intent(inout) :: iomsg
   character(len=:), allocatable :: write_format
   integer, parameter :: num_comps = 7
@@ -58,7 +64,9 @@ end subroutine write_formatted
 
 !> Convert integer to string.
 pure function int2str(n) result(str)
+  !> Integer value to convert to a string representation.
   integer, intent(in) :: n
+  !> Returned string representation of `n` (allocated to length).
   character(len=:), allocatable :: str
   integer :: m
 

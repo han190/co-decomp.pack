@@ -4,9 +4,13 @@ contains
 
 !> The "size" function for decomposition_type
 pure module function get_size(decomp, dim, opt) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Optional dimension index to query.
   integer, intent(in), optional :: dim
+  !> Optional option string (e.g., "local" or "global").
   character(len=*), intent(in), optional :: opt
+  !> Returned size value.
   integer :: ret
   integer :: dim_
   character(len=:), allocatable :: opt_
@@ -33,8 +37,11 @@ end function get_size
 
 !> The `shape` function for decomposition_type
 pure module function get_shape(decomp, opt) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Optional option string influencing returned shape.
   character(len=*), intent(in), optional :: opt
+  !> Returned shape array (one entry per dimension).
   integer, allocatable :: ret(:)
   character(len=:), allocatable :: opt_
 
@@ -53,7 +60,9 @@ end function get_shape
 
 !> Get base index
 pure module function base_index(decomp) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Returned base index array for each dimension.
   integer, allocatable :: ret(:)
 
   ret = decomp%base_index
@@ -61,7 +70,9 @@ end function base_index
 
 !> Get remainder
 pure module function remainder(decomp) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Returned remainder array (per-dimension leftover counts).
   integer, allocatable :: ret(:)
 
   ret = decomp%remainder
@@ -69,7 +80,9 @@ end function remainder
 
 !> Get number of processors
 pure module function get_coshape(decomp) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Returned number-of-processors array (co-shape) per dimension.
   integer, allocatable :: ret(:)
 
   ret = decomp%num_procs
@@ -77,8 +90,11 @@ end function get_coshape
 
 !> Get co_index
 pure module function get_thisimage(decomp, dim) result(ret)
+  !> Decomposition object to query.
   type(decomposition_type), intent(in) :: decomp
+  !> Optional dimension index for which to return this image id.
   integer, intent(in), optional :: dim
+  !> Returned image index (processor coordinate or linear id).
   integer :: ret
   integer :: dim_
 
