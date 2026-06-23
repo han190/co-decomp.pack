@@ -7,6 +7,17 @@ copyright = "Copyright 2019-2026 Han Tang"
 description = "Coarray Decomposition Library"
 keywords = ["coarray", "Fortran"]
 
+[features]
+debug.flags = "-g"
+debug.gfortran.flags = "-fcoarray=lib -lcaf_shmem"
+
+release.flags = "-O3"
+release.gfortran.flags = "-fcoarray=lib -lcaf_shmem"
+
+[profiles]
+debug = ["debug"]
+release = ["release"]
+
 [install]
 library = true
 
